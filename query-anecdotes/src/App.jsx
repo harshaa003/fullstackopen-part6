@@ -1,5 +1,6 @@
 import AnecdoteForm from './components/AnecdoteForm'
 import AnecdoteList from './components/AnecdoteList'
+import Notification from './components/Notification'
 import useAnecdotes from './hooks/useAnecdotes'
 
 const App = () => {
@@ -16,6 +17,8 @@ const App = () => {
   return (
     <div>
       <h2>Anecdotes</h2>
+
+      <Notification />
 
       <AnecdoteList anecdotes={result.data} />
 

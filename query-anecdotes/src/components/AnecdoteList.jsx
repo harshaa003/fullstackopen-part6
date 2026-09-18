@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNotify } from '../NotificationContext'
 
 const updateAnecdote = async anecdote => {
   const response = await fetch(
@@ -21,6 +22,7 @@ const updateAnecdote = async anecdote => {
 
 const AnecdoteList = ({ anecdotes }) => {
   const queryClient = useQueryClient()
+  const notify = useNotify()
 
   const mutation = useMutation({
     mutationFn: updateAnecdote,
@@ -36,6 +38,8 @@ const AnecdoteList = ({ anecdotes }) => {
       ...anecdote,
       votes: anecdote.votes + 1
     })
+
+    notify(`you voted '${anecdote.content}'`)
   }
 
   const sortedAnecdotes = [...anecdotes].sort(
@@ -49,9 +53,7 @@ const AnecdoteList = ({ anecdotes }) => {
           <p>{anecdote.content}</p>
           <p>has {anecdote.votes} votes</p>
 
-          <button onClick={() => vote(anecdote)}>
-            vote
-          </button>
+          <button onClick={() => vote(anecdote)}>vote</button>
         </div>
       ))}
     </div>

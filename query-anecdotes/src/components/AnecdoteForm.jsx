@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNotify } from '../NotificationContext'
 
 const createAnecdote = async newAnecdote => {
   const response = await fetch('http://localhost:3001/anecdotes', {
@@ -10,7 +11,8 @@ const createAnecdote = async newAnecdote => {
   })
 
   if (!response.ok) {
-    throw new Error('failed to create anecdote')
+    const error = await response.json()
+    throw new Error(error.error)
   }
 
   return response.json()
@@ -18,13 +20,21 @@ const createAnecdote = async newAnecdote => {
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
+  const notify = useNotify()
 
   const mutation = useMutation({
     mutationFn: createAnecdote,
-    onSuccess: () => {
+
+    onSuccess: data => {
       queryClient.invalidateQueries({
         queryKey: ['anecdotes']
       })
+
+      notify(`a new anecdote '${data.content}' created`)
+    },
+
+    onError: error => {
+      notify(error.message)
     }
   })
 
@@ -48,9 +58,7 @@ const AnecdoteForm = () => {
       <form onSubmit={addAnecdote}>
         <input name="anecdote" />
 
-        <button type="submit">
-          create
-        </button>
+        <button type="submit">create</button>
       </form>
     </div>
   )
